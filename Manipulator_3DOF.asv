@@ -1,0 +1,26 @@
+classdef Manipulator_3DOF
+    properties 
+        theta = zeros(1, 3); %関節の角度
+        position = zeros(1, 3);%手先の位置
+        orientation = zeros(1, 4);%手先の姿勢
+    end
+
+    methods
+        function 
+        function p = getPosition(obj)
+            p = obj.position;
+        end
+
+        function obj = setPosition(obj, src_position)
+            obj.position = src_position;
+        end
+
+        function o = getOrientation(obj)
+            o = obj.orientation;
+        end
+
+        function plotRobot()
+        end
+    end
+
+end

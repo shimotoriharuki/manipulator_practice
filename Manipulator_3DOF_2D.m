@@ -56,8 +56,8 @@ classdef Manipulator_3DOF_2D
         %ロボットの状態を更新
         function obj = updateRobotState(obj)
             %指先の位置を計算
-            obj.finger_position1_ = obj.hand_position_ + [0.1 * cos(obj.hand_orientation_ + pi/4); 0.1 * sin(obj.hand_orientation_ + pi/4); 0];
-            obj.finger_position2_ = obj.hand_position_ + [0.1 * cos(obj.hand_orientation_ - pi/4); 0.1 * sin(obj.hand_orientation_ - pi/4); 0];
+            obj.finger_position1_ = obj.hand_position_ + [0.2 * cos(obj.hand_orientation_); 0.2 * sin(obj.hand_orientation_); 0];
+            obj.finger_position2_ = obj.hand_position_ + [0.1 * cos(obj.hand_orientation_ + pi/2); 0.1 * sin(obj.hand_orientation_ + pi/2); 0];
 
             %エンドエフェクタの位置を計算
             obj = obj.calcKinematics;
@@ -65,11 +65,11 @@ classdef Manipulator_3DOF_2D
 
         %ロボットの状態をプロット
         function plotRobot(obj)
-            plot([obj.P0_(1), obj.P1_(1)], [obj.P0_(2), obj.P1_(2)]); %リンク1
+            plot([obj.P0_(1), obj.P1_(1)], [obj.P0_(2), obj.P1_(2)], "LineWidth", 3); %リンク1
             hold on 
-            plot([obj.P1_(1), obj.P2_(1)], [obj.P1_(2), obj.P2_(2)]); %リンク2
-            plot([obj.P2_(1), obj.finger_position1_(1)], [obj.P2_(2), obj.finger_position1_(2)]); %ハンド
-            plot([obj.P2_(1), obj.finger_position2_(1)], [obj.P2_(2), obj.finger_position2_(2)]); %ハンド
+            plot([obj.P1_(1), obj.P2_(1)], [obj.P1_(2), obj.P2_(2)], "LineWidth", 3); %リンク2
+            plot([obj.P2_(1), obj.finger_position1_(1)], [obj.P2_(2), obj.finger_position1_(2)], "LineWidth", 3); %指先
+            plot([obj.P2_(1), obj.finger_position2_(1)], [obj.P2_(2), obj.finger_position2_(2)], "LineWidth", 3); %指先
             hold off
 
             axis equal

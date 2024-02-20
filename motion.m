@@ -14,7 +14,7 @@ theta = 0;
 for position = 2 : -0.1 : 1
     theta = theta+0.6;
     robot = robot.setPosition([position; 0; 0]);
-    robot = robot.setOrientation(theta);
+    robot = robot.setOrientation(0);
     robot = robot.calcInverseKinematics;
     robot = robot.updateRobotState;
     robot.plotRobot;

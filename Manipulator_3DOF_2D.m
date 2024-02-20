@@ -1,13 +1,16 @@
 classdef Manipulator_3DOF_2D
     properties(SetAccess = public)
         joint_thetas_ = zeros(3, 1); %関節の角度
-        position_ = zeros(3, 1);%手先の位置
-        orientation_ = zeros(1, 1);%手先の姿勢
+        hand_position_ = zeros(3, 1);%手先の位置
+        hand_orientation_ = zeros(1, 1);%手先の姿勢
         arm_lengths_ = zeros(2, 1);
 
         P0_ = zeros(3, 1);
         P1_ = zeros(3, 1);
         P2_ = zeros(3, 1);
+
+        finger_position1_ = zeros(3, 1);
+        finger_position2_ = zeros(3, 1);
     end
 
     methods
@@ -22,22 +25,22 @@ classdef Manipulator_3DOF_2D
 
         %手先位置の取得
         function p = getPosition(obj)
-            p = obj.position_;
+            p = obj.hand_position_;
         end
         
         %手先位置の設定
         function obj = setPosition(obj, src_position)
-            obj.position_ = src_position;
+            obj.hand_position_ = src_position;
         end
 
         %手先姿勢の取得
         function o = getOrientation(obj)
-            o = obj.orientation_;
+            o = obj.hand_orientation_;
         end
 
         %手先姿勢の設定
         function obj = setOrientation(obj, theta)
-            obj.orientation_ = theta;
+            obj.hand_orientation_ = theta;
         end
 
         %各関節角度の取得
@@ -50,7 +53,13 @@ classdef Manipulator_3DOF_2D
             obj.joint_thetas_ = thetas;
         end
 
+        %ロボットの状態を更新
         function obj = updateRobotState(obj)
+            %指先の位置を計算
+            obj.finger_position1_ = obj.hand_position_ + [0.1 * cos(obj.hand_orientation_ + pi/4); 0.1 * sin(obj.hand_orientation_ + pi/4); 0];
+            obj.finger_position2_ = obj.hand_position_ + [0.1 * cos(obj.hand_orientation_ - pi/4); 0.1 * sin(obj.hand_orientation_ - pi/4); 0];
+
+            %エンドエフェクタの位置を計算
             obj = obj.calcKinematics;
         end
 
@@ -59,6 +68,8 @@ classdef Manipulator_3DOF_2D
             plot([obj.P0_(1), obj.P1_(1)], [obj.P0_(2), obj.P1_(2)]); %リンク1
             hold on 
             plot([obj.P1_(1), obj.P2_(1)], [obj.P1_(2), obj.P2_(2)]); %リンク2
+            plot([obj.P2_(1), obj.finger_position1_(1)], [obj.P2_(2), obj.finger_position1_(2)]); %ハンド
+            plot([obj.P2_(1), obj.finger_position2_(1)], [obj.P2_(2), obj.finger_position2_(2)]); %ハンド
             hold off
 
             axis equal
@@ -82,15 +93,15 @@ classdef Manipulator_3DOF_2D
                        0, length1, 0; 
                        0, 0, length0] * [cos(theta0 + theta1); sin(theta0 + theta1); 0];
             
-            obj.position_ = obj.P2_;
+            obj.hand_position_ = obj.P2_;
         end
 
         function obj = calcInverseKinematics(obj)
             %位置と姿勢から関節角度を計算する
             l0 = obj.arm_lengths_(1);
             l1 = obj.arm_lengths_(2);
-            x = obj.position_(1);
-            y = obj.position_(2);
+            x = obj.hand_position_(1);
+            y = obj.hand_position_(2);
             theta1 = pi - acos((l0^2 + l1^2 - x^2 - y^2)/(2 * l0 * l1));
             theta0 = atan2(y, x) - acos((x^2 + y^2 + l0^2 - l1^2)/(2 * sqrt(x^2 + y^2) * l0));
             obj.joint_thetas_ = [theta0; theta1; 0];

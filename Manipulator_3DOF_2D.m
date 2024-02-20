@@ -50,6 +50,10 @@ classdef Manipulator_3DOF_2D
             obj.joint_thetas_ = thetas;
         end
 
+        function obj = updateRobotState(obj)
+            obj = obj.calcKinematics;
+        end
+
         %ロボットの状態をプロット
         function plotRobot(obj)
             plot([obj.P0_(1), obj.P1_(1)], [obj.P0_(2), obj.P1_(2)]); %リンク1
@@ -83,7 +87,13 @@ classdef Manipulator_3DOF_2D
 
         function obj = calcInverseKinematics(obj)
             %位置と姿勢から関節角度を計算する
-            obj.joint_thetas_ = [0; 0; 0];
+            l0 = obj.arm_lengths_(1);
+            l1 = obj.arm_lengths_(2);
+            x = obj.position_(1);
+            y = obj.position_(2);
+            theta1 = pi - acos((l0^2 + l1^2 - x^2 - y^2)/(2 * l0 * l1));
+            theta0 = atan2(y, x) - acos((x^2 + y^2 + l0^2 - l1^2)/(2 * sqrt(x^2 + y^2) * l0));
+            obj.joint_thetas_ = [theta0; theta1; 0];
         end
     end
 

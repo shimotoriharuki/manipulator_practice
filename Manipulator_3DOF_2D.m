@@ -16,8 +16,8 @@ classdef Manipulator_3DOF_2D
             obj.joint_thetas_ = initial_thetas;
             obj.arm_lengths_ = arm_lengths;
 
-            obj = obj.calcKinematics;
-            obj.plotRobot;
+            obj = obj.calcKinematics; %初期姿勢を計算
+            obj.plotRobot; %初期姿勢をプロット
         end
 
         %手先位置の取得
@@ -35,6 +35,21 @@ classdef Manipulator_3DOF_2D
             o = obj.orientation_;
         end
 
+        %手先姿勢の設定
+        function obj = setOrientation(obj, theta)
+            obj.orientation_ = theta;
+        end
+
+        %各関節角度の取得
+        function t = getJointThetas(obj)
+           t = obj.joint_thetas_;
+        end
+     
+        %各関節角度の設定
+        function obj = setJointThetas(obj, thetas)
+            obj.joint_thetas_ = thetas;
+        end
+
         %ロボットの状態をプロット
         function plotRobot(obj)
             plot([obj.P0_(1), obj.P1_(1)], [obj.P0_(2), obj.P1_(2)]); %リンク1
@@ -45,6 +60,8 @@ classdef Manipulator_3DOF_2D
             axis equal
             xlim([-2, 2])
             ylim([-2, 2])
+
+            drawnow
         end
     
         function obj = calcKinematics(obj)

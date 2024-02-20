@@ -7,6 +7,7 @@ classdef Manipulator_3DOF_2D
 
         P0_ = zeros(3, 1);
         P1_ = zeros(3, 1);
+        P2_ = zeros(3, 1);
     end
 
     methods
@@ -15,13 +16,12 @@ classdef Manipulator_3DOF_2D
             obj.joint_thetas_ = initial_thetas;
             obj.arm_lengths_ = arm_lengths;
 
-            obj = obj.calcKinematics;
-            obj.plotRobot;
+            obj = obj.calcKinematics; %初期姿勢を計算
+            obj.plotRobot; %初期姿勢をプロット
         end
 
         %手先位置の取得
         function p = getPosition(obj)
-            % obj.position = [1; 1; 1];
             p = obj.position_;
         end
         
@@ -35,29 +35,47 @@ classdef Manipulator_3DOF_2D
             o = obj.orientation_;
         end
 
+        %手先姿勢の設定
+        function obj = setOrientation(obj, theta)
+            obj.orientation_ = theta;
+        end
+
+        %各関節角度の取得
+        function t = getJointThetas(obj)
+           t = obj.joint_thetas_;
+        end
+     
+        %各関節角度の設定
+        function obj = setJointThetas(obj.thetas)
+            
+
         %ロボットの状態をプロット
         function plotRobot(obj)
-            plot(obj.P0_(1), obj.P1_(1));
+            plot([obj.P0_(1), obj.P1_(1)], [obj.P0_(2), obj.P1_(2)]); %リンク1
             hold on 
-            
+            plot([obj.P1_(1), obj.P2_(1)], [obj.P1_(2), obj.P2_(2)]); %リンク2
+            hold off
+
+            axis equal
+            xlim([-2, 2])
+            ylim([-2, 2])
         end
     
-
         function obj = calcKinematics(obj)
             %関節角度から位置と姿勢を計算する
             theta0 = obj.joint_thetas_(1);
             length0 = obj.arm_lengths_(1);
-            obj.P0_ = [length0, 0, 0; 
+            obj.P1_ = obj.P0_ + [length0, 0, 0; 
                   0, length0, 0; 
                   0, 0, length0] * [cos(theta0); sin(theta0); 0];
 
             theta1 = obj.joint_thetas_(2);
             length1 = obj.arm_lengths_(2);
-            obj.P1_ = obj.P0_ + [length1, 0, 0; 
+            obj.P2_ = obj.P1_ + [length1, 0, 0; 
                        0, length1, 0; 
                        0, 0, length0] * [cos(theta0 + theta1); sin(theta0 + theta1); 0];
             
-            obj.position_ = obj.P1_;
+            obj.position_ = obj.P2_;
         end
 
         function obj = calcInverseKinematics(obj)

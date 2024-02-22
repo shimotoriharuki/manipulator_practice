@@ -11,13 +11,16 @@ classdef Manipulator_3DOF_2D
 
         finger_position1_ = zeros(3, 1);
         finger_position2_ = zeros(3, 1);
+
+        dt_ = 0; %制御周期
     end
 
     methods
         %コンストラクタ
-        function obj = Manipulator_3DOF_2D(initial_thetas, arm_lengths)
+        function obj = Manipulator_3DOF_2D(initial_thetas, arm_lengths, dt)
             obj.joint_thetas_ = initial_thetas;
             obj.arm_lengths_ = arm_lengths;
+            obj.dt_ = dt;
 
             % obj = obj.calcKinematics; %初期姿勢を計算
             obj = obj.updateRobotState;
@@ -107,6 +110,25 @@ classdef Manipulator_3DOF_2D
             theta0 = atan2(y, x) - acos((x^2 + y^2 + l0^2 - l1^2)/(2 * sqrt(x^2 + y^2) * l0));
             obj.joint_thetas_ = [theta0; theta1; 0];
         end
-    end
 
+        function obj = calcInverseKinematicsUsingJacobian(obj, d_hand_position)
+            th0 = obj.joint_thetas_(1);
+            th1 = obj.joint_thetas_(2);
+            l0 = obj.arm_lengths_(1);
+            l1 = obj.arm_lengths_(2);
+
+            j11 = -cos(th0 + th1) / (l0 * cos(th0 + th1) * sin(th0) - l0 * sin(th0 + th1) * cos(th0));
+            j12 = -sin(th0 + th1) / (l0 * cos(th0 + th1) * sin(th0) - l0 * sin(th0 + th1) * cos(th0));
+            j21 = (l1 * cos(th0 + th1) + l0 * cos(th0)) / (l0 * l1 * cos(th0 + th1) * sin(th0) - l0 * l1 * sin(th0 + th1) * cos(th0));
+            j22 = (l1 * sin(th0 + th1) + l0 * sin(th0))/(l0 * l1 * cos(th0 + th1) * sin(th0) - l0 * l1 * sin(th0 + th1) * cos(th0));
+            
+            J_inv = [j11, j12;
+                     j21, j22];
+
+            d_joint_thetas = J_inv * d_hand_position;
+
+            obj.joint_thetas_ = obj.joint_thetas_ + [d_joint_thetas; 0] * obj.dt_;
+            
+        end
+    end
 end

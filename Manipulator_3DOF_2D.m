@@ -19,7 +19,8 @@ classdef Manipulator_3DOF_2D
             obj.joint_thetas_ = initial_thetas;
             obj.arm_lengths_ = arm_lengths;
 
-            obj = obj.calcKinematics; %初期姿勢を計算
+            % obj = obj.calcKinematics; %初期姿勢を計算
+            obj = obj.updateRobotState;
             obj.plotRobot; %初期姿勢をプロット
         end
 
@@ -55,12 +56,12 @@ classdef Manipulator_3DOF_2D
 
         %ロボットの状態を更新
         function obj = updateRobotState(obj)
+            %エンドエフェクタの位置を計算
+            obj = obj.calcKinematics;
+
             %指先の位置を計算
             obj.finger_position1_ = obj.hand_position_ + [0.2 * cos(obj.hand_orientation_); 0.2 * sin(obj.hand_orientation_); 0];
             obj.finger_position2_ = obj.hand_position_ + [0.1 * cos(obj.hand_orientation_ + pi/2); 0.1 * sin(obj.hand_orientation_ + pi/2); 0];
-
-            %エンドエフェクタの位置を計算
-            obj = obj.calcKinematics;
         end
 
         %ロボットの状態をプロット
@@ -73,8 +74,8 @@ classdef Manipulator_3DOF_2D
             hold off
 
             axis equal
-            xlim([-2, 2])
-            ylim([-2, 2])
+            xlim([-2.5, 2.5])
+            ylim([-2.5, 2.5])
 
             drawnow
         end

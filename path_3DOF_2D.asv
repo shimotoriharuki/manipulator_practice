@@ -13,17 +13,36 @@ v1(t) = (V_m / t_acc) * t;
 v2(t) = v1(t_acc);
 v3(t) = v2(T_f - t_acc) - (V_m / t_acc) * (t - T_f + t_acc);
 
+v = piecewise((0 <= t) & (t <= t_acc), v1, (t_acc <= t) & (t <= T_f - t_acc), v2, (T_f - t <= t) & (t < T_f), v3);
+
+
 subplot(2, 1, 1)
-fplot(t, v1, [0, t_acc]);
+fplot(t, v, [0, t_acc]);
 hold on
-fplot(t, v2, [t_acc, T_f - t_acc]);
-fplot(t, v3, [T_f - t_acc, T_f]);
+fplot(t, v, [t_acc, T_f - t_acc]);
+fplot(t, v, [T_f - t_acc, T_f]);
 hold off
 
 %位置
 x1 = int(v1);
-x2 = int(v2) - ;
+x2 = int(v2);
 x3 = int(v3);
+
+x2 = subs
+
+%積分定数
+% c1 = 0;
+% c2 = int(v2, [0, t_acc]) - int(v1, [0, t_acc]);
+% c3 = int(v3, [0, T_f - t_acc]) - int(v2, [0, T_f - t_acc]) + c2;
+% 
+% x2 = x2 - c2;
+% x3 = x3 - c3;
+
+x = int(v, t);
+
+%微妙？？
+% x2 = x2 - (x2(t_acc) - x1(t_acc));
+% x3 = int(v3) - (x3(T_f - t_acc) - x2(T_f - t_acc));
 
 subplot(2, 1, 2)
 fplot(t, x1, [0, t_acc]);

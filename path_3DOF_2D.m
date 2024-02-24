@@ -1,5 +1,3 @@
-clear
-
 syms T_f t_acc l v1(t) v2(t) v3(t) V_m
 
 v1(t) = (V_m / t_acc) * t;
@@ -20,6 +18,7 @@ x3 = x3 + (x2(T_f - t_acc) - x3(T_f - t_acc));
 
 fx = piecewise((0 <= t) & (t <= t_acc), x1, (t_acc <= t) & (t <= T_f - t_acc), x2, (T_f - t_acc <= t) & (t <= T_f), x3); % まとめる
 
+
 %tex形式で出力
 fv_latex = latex(fv);
 fx_latex = latex(fx);
@@ -30,9 +29,8 @@ fx = subs(fx, V_m, l / (T_f - t_acc));
 fv = subs(fv, V_m, l / (T_f - t_acc));
 
 %数値を代入してプロット
-dt = 0.1;
 T_f_ = 5; %[s]
-t_acc_ = 1;%[s]
+t_acc_ = 2;%[s]
 l_ = 1;%[m]
 
 fv = subs(fv, T_f, T_f_);
@@ -43,8 +41,23 @@ fx = subs(fx, T_f, T_f_);
 fx = subs(fx, t_acc, t_acc_);
 fx = subs(fx, l, l_);
 
-subplot(2, 1, 1)
+figure(1)
+subplot(3, 1, 1)
 fplot(t, fv);
+title("v-tグラフ")
+xlabel("t [s]")
+ylabel("v [m/s]")
 
-subplot(2, 1, 2)
+subplot(3, 1, 2)
 fplot(t, fx);
+title("x-tグラフ")
+xlabel("t [s]")
+ylabel("x [m]")
+
+subplot(3, 1, 3)
+tt = linspace(0, T_f_, 100);
+scatter(fx(tt), 1);
+title("手先位置")
+xlabel("x [m]")
+ylabel("y [m]")
+axis equal

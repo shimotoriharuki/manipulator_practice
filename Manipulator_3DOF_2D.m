@@ -20,14 +20,16 @@ classdef Manipulator_3DOF_2D
 
     methods
         %コンストラクタ
-        function obj = Manipulator_3DOF_2D(initial_thetas, arm_lengths, dt)
+        function obj = Manipulator_3DOF_2D(initial_thetas, arm_lengths, dt, initial_pose_display)
             obj.joint_angles_ = initial_thetas;
             obj.arm_links_ = arm_lengths;
             obj.dt_ = dt;
 
             obj = obj.updateRobotState; %初期状態のロボットの状態をアップデート
 
-            obj.plotRobot; %初期姿勢をプロット
+            if(initial_pose_display == true)
+                obj.plotRobot; %初期姿勢をプロット
+            end
         end
 
         %ロボットの状態を更新

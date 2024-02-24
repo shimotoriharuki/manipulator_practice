@@ -1,54 +1,52 @@
 clear
-dt = 0.1;
-T_f = 5; %[s]
-t_acc = 1;%[s]
-l = 1;%[m]
 
-syms v1(t) v2(t) v3(t)
-
-%速度
-V_m =l / (T_f - t_acc);
+syms T_f t_acc l v1(t) v2(t) v3(t) V_m
 
 v1(t) = (V_m / t_acc) * t;
 v2(t) = v1(t_acc);
 v3(t) = v2(T_f - t_acc) - (V_m / t_acc) * (t - T_f + t_acc);
 
-v = piecewise((0 <= t) & (t <= t_acc), v1, (t_acc <= t) & (t <= T_f - t_acc), v2, (T_f - t <= t) & (t < T_f), v3);
-
-
-subplot(2, 1, 1)
-fplot(t, v, [0, t_acc]);
-hold on
-fplot(t, v, [t_acc, T_f - t_acc]);
-fplot(t, v, [T_f - t_acc, T_f]);
-hold off
+v = piecewise((0 <= t) & (t <= t_acc), v1, (t_acc <= t) & (t_acc <= T_f - t_acc), v2, (T_f - t_acc <= t) & (t <= T_f), v3); % まとめる
 
 %位置
 x1 = int(v1);
 x2 = int(v2);
 x3 = int(v3);
 
-x2 = subs
-
 %積分定数
-% c1 = 0;
-% c2 = int(v2, [0, t_acc]) - int(v1, [0, t_acc]);
-% c3 = int(v3, [0, T_f - t_acc]) - int(v2, [0, T_f - t_acc]) + c2;
+x1 = x1 + 0;
+x2 = x2 + (x1(t_acc) - x2(t_acc));
+x3 = x3 + (x2(T_f - t_acc) - x3(T_f - t_acc));
+
+x = piecewise((0 <= t) & (t <= t_acc), x1, (t_acc <= t) & (t_acc <= T_f - t_acc), x2, (T_f - t_acc <= t) & (t <= T_f), x3); % まとめる
+
+%tex形式で出力
+v_latex = latex(v);
+x_latex = latex(x);
+
+%最大速度
+V_m = l / (T_f - t_acc);
+
+%数値を代入してプロット
+dt = 0.1;
+T_f_ = 5; %[s]
+t_acc_ = 1;%[s]
+l_ = 1;%[m]
+
+x_num = subs(x)
+
+% subplot(2, 1, 1)
+% fplot(t, v1, [0, t_acc]);
+% hold on
+% fplot(t, v2, [t_acc, T_f - t_acc]);
+% fplot(t, v3, [T_f - t_acc, T_f]);
+% hold off
 % 
-% x2 = x2 - c2;
-% x3 = x3 - c3;
-
-x = int(v, t);
-
-%微妙？？
-% x2 = x2 - (x2(t_acc) - x1(t_acc));
-% x3 = int(v3) - (x3(T_f - t_acc) - x2(T_f - t_acc));
-
-subplot(2, 1, 2)
-fplot(t, x1, [0, t_acc]);
-hold on
-fplot(t, x2, [t_acc, T_f - t_acc]);
-fplot(t, x3, [T_f - t_acc, T_f]);
-hold off
+% subplot(2, 1, 2)
+% fplot(t, x1, [0, t_acc]);
+% hold on
+% fplot(t, x2, [t_acc, T_f - t_acc]);
+% fplot(t, x3, [T_f - t_acc, T_f]);
+% hold off
 % xlim([0, 5])
 % ylim([0, 1])

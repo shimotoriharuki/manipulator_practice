@@ -83,8 +83,8 @@ ylabel("y [m]")
 
 subplot(m, n, [7, 8])
 % tt = 0 : dt : T_f_;
-path_x = x_0(1, :) + (x_f(1, :)) .* fx_x(tt);
-path_y = x_0(2, :) + (x_f(2, :)) .* fx_y(tt);
+path_x = x_0(1, :) + (x_f(1, :) - x_0(1, :) / l_(1, :)) .* fx_x(tt);
+path_y = x_0(2, :) + (x_f(2, :) - x_0(2, :) / l_(2, :)) .* fx_y(tt);
 
 scatter(path_x, path_y);
 title("手先位置")

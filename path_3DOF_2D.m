@@ -1,3 +1,4 @@
+%%% 立式 %%%
 syms T_f t_acc l v1(t) v2(t) v3(t) V_m
 
 v1(t) = (V_m / t_acc) * t;
@@ -18,7 +19,6 @@ x3 = x3 + (x2(T_f - t_acc) - x3(T_f - t_acc));
 
 fx = piecewise((0 <= t) & (t <= t_acc), x1, (t_acc <= t) & (t <= T_f - t_acc), x2, (T_f - t_acc <= t) & (t <= T_f), x3); % まとめる
 
-
 %tex形式で出力
 fv_latex = latex(fv);
 fx_latex = latex(fx);
@@ -28,11 +28,14 @@ fx_latex = latex(fx);
 fx = subs(fx, V_m, l / (T_f - t_acc));
 fv = subs(fv, V_m, l / (T_f - t_acc));
 
-%数値を代入してプロット
+%%% パラメータを代入 %%%
 T_f_ = 5; %[s]
 t_acc_ = 2;%[s]
-xf = [1; 1];
-l_ = norm(xf);%[m]
+
+tt = 0 : dt : T_f_;
+x_0 = [1; 0]; %初期位置
+x_f = [0.1 * tt; sin(pi/2 * tt)]; %目標位置
+l_ = norm(x_f);%[m] %初期位置から目標位置までの軌道の
 
 fv = subs(fv, T_f, T_f_);
 fv = subs(fv, t_acc, t_acc_);
@@ -42,7 +45,6 @@ fx = subs(fx, T_f, T_f_);
 fx = subs(fx, t_acc, t_acc_);
 fx = subs(fx, l, l_);
 
-figure(1)
 subplot(3, 1, 1)
 fplot(t, fv);
 title("v-tグラフ")
@@ -56,9 +58,8 @@ xlabel("t [s]")
 ylabel("x [m]")
 
 subplot(3, 1, 3)
-tt = 0 : dt : T_f_;
-
-path = (xf / l_) * fx(tt);
+% tt = 0 : dt : T_f_;
+path = x_0 + (x_f - x_0 / l_) .* fx(tt);
  
 scatter(path(1, :), path(2, :));
 title("手先位置")

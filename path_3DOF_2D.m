@@ -53,33 +53,33 @@ fx = subs(fx, l, l_);
 
 %プロット
 m = 4; %プロットの行
-n = 2; %プロットの列
+n = 1; %プロットの列
 
-% subplot(m, n, [1, 2])
+subplot(m, n, 1)
 scatter(x_0(1, :) + x_f(1, :), x_0(2, :) + x_f(2, :));
-% title("軌道")
-% xlabel("x [m]")
-% ylabel("y [m]")
-axis equal
+title("軌道")
+xlabel("x [m]")
+ylabel("y [m]")
+% axis equal
 
-% subplot(m, n, 3)
-% fplot(t, fv_x);
-% title("vx-tグラフ")
-% xlabel("t [s]")
-% ylabel("vx [m/s]")
-% 
+subplot(m, n, 2)
+fplot(t, fv);
+title("vx-tグラフ")
+xlabel("t [s]")
+ylabel("vx [m/s]")
+
 % subplot(m, n, 4)
 % fplot(t, fv_y);
 % title("vy-tグラフ")
 % xlabel("t [s]")
 % ylabel("vy [m/s]")
-% 
-% subplot(m, n, 5)
-% fplot(t, fx_x);
-% title("x-tグラフ")
-% xlabel("t [s]")
-% ylabel("x [m]")
-% 
+
+subplot(m, n, 3)
+fplot(t, fx);
+title("x-tグラフ")
+xlabel("t [s]")
+ylabel("x [m]")
+
 % subplot(m, n, 6)
 % fplot(t, fx_y);
 % title("y-tグラフ")
@@ -102,8 +102,10 @@ for i = 1 : length(x_f) - 1
     
 
 end
-
+% subplot(m, n, 4)
 dit = [cumsum(ddx(1, :)); cumsum(ddx(2, :))];
+scatter(dit(1, :), dit(2, :))
+
 % d_path_x = ((x_f(1, :) - x_0(1)) / l_(1)) .* fv_x(tt) * dt;
 % d_path_y = ((x_f(2, :) - x_0(2)) / l_(2)) .* fv_y(tt) * dt;
 % path_x = x_0(1) + [cumsum(d_path_x)];

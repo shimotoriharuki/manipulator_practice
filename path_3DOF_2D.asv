@@ -32,30 +32,37 @@ fx = subs(fx, V_m, l / (T_f - t_acc));
 fv = subs(fv, V_m, l / (T_f - t_acc));
 
 %%% パラメータを代入 %%%
-dt = 0.005;
+dt = 0.01;
 T_f_ = 1; %[s]
 t_acc_ = 0.2;%[s]
 
 tt = 0 : dt : T_f_;
 x_0 = [0; 0]; %初期位置
 
+% x_f = [sqrt(3)*tt; tt]; %目標位置
 x_f = [tt; sin((2*pi) * tt)]; %目標位置
+
 delta_x = diff(x_f(1, :));
 delta_y = diff(x_f(2, :));
-delta_l = sqrt((delta_x .^ 2) + (delta_y .^ 2));
+delta_l = sqrt(power(delta_x, 2) + power(delta_y, 2));
 l_ = sum(delta_l);  %[m] %初期位置から目標位置までの軌道の道のりの距離
-% l_ = 2*pi/4;  %[m] %初期位置から目標位置までの軌道の道のりの距離
-
-% x_f = [tt; tt]; %目標位置
+l_x_ = sum(abs(delta_x));
+l_y_ = sum(abs(delta_y));
+% l_ = 2*pi;  %[m] %初期位置から目標位置までの軌道の道のりの距離
 % l_ = sqrt(2);  %[m] %初期位置から目標位置までの軌道の道のりの距離
 
 fv = subs(fv, T_f, T_f_);
 fv = subs(fv, t_acc, t_acc_);
 fv = subs(fv, l, l_);
+fv_x = subs(fv, l, l_x_);
+fv_y = subs(fv, l, l_y_);
 
 fx = subs(fx, T_f, T_f_);
 fx = subs(fx, t_acc, t_acc_);
 fx = subs(fx, l, l_);
+fx_x = subs(fx, l, l_x_);
+fx_y = subs(fx, l, l_y_);
+
 
 %プロット
 m = 4; %プロットの行
@@ -82,16 +89,16 @@ ylabel("x [m]")
 %軌道計算
 distance = 0;
 delta_path = zeros(2, length(x_f) - 1);
+V = l_ / T_f_;
 for i = 1 : length(x_f) - 1
-    % delta_x = x_f(1, i + 1) - x_f(1, i);
-    % delta_y = x_f(2, i + 1) - x_f(2, i);
-    % delta_l = sqrt(delta_x ^ 2 + delta_y ^ 2);
 
-    % delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * fv(tt(i)) * dt;
-    
+    delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) .* [fv_x(tt(i)); ] * dt; %台形速度
+    % delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * V * dt; %一定速度
+
     distance = distance + delta_l(i);
 end
 
-subplot(m, n, 4)
 path = [cumsum(delta_path(1, :)); cumsum(delta_path(2, :))];
+
+subplot(m, n, 4)
 scatter(path(1, :), path(2, :))

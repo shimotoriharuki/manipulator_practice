@@ -85,8 +85,8 @@ delta_path = zeros(2, length(x_f) - 1);
 V = l_ / T_f_;
 for i = 1 : length(x_f) - 1
 
-    % delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * fv(tt(i)) * dt; %台形速度
-        delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * V * dt; %一定速度
+    delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * fv(tt(i)) * dt; %台形速度
+    % delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * V * dt; %一定速度
 
     distance = distance + delta_l(i);
 end

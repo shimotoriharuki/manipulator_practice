@@ -39,14 +39,14 @@ t_acc_ = 0.2;%[s]
 tt = 0 : dt : T_f_;
 x_0 = [0; 0]; %初期位置
 
-x_f = [tt; sin((pi) * tt)]; %目標位置
+% x_f = [sqrt(3)*tt; tt]; %目標位置
+x_f = [tt; sin((2*pi) * tt)]; %目標位置
+
 delta_x = diff(x_f(1, :));
 delta_y = diff(x_f(2, :));
-delta_l = sqrt(delta_x .^ 2 + delta_y .^ 2);
+delta_l = sqrt(power(delta_x, 2) + power(delta_y, 2));
 l_ = sum(delta_l);  %[m] %初期位置から目標位置までの軌道の道のりの距離
-% l_ = 2*pi/4;  %[m] %初期位置から目標位置までの軌道の道のりの距離
-
-% x_f = [tt; tt]; %目標位置
+% l_ = 2*pi;  %[m] %初期位置から目標位置までの軌道の道のりの距離
 % l_ = sqrt(2);  %[m] %初期位置から目標位置までの軌道の道のりの距離
 
 fv = subs(fv, T_f, T_f_);
@@ -91,6 +91,7 @@ for i = 1 : length(x_f) - 1
     distance = distance + delta_l(i);
 end
 
-subplot(m, n, 4)
 path = [cumsum(delta_path(1, :)); cumsum(delta_path(2, :))];
+
+subplot(m, n, 4)
 scatter(path(1, :), path(2, :))

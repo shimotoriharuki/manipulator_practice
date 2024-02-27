@@ -32,15 +32,19 @@ fx = subs(fx, V_m, l / (T_f - t_acc));
 fv = subs(fv, V_m, l / (T_f - t_acc));
 
 %%% パラメータを代入 %%%
-dt = 0.01;
+dt = 0.005;
 T_f_ = 1; %[s]
 t_acc_ = 0.2;%[s]
 
 tt = 0 : dt : T_f_;
 x_0 = [0; 0]; %初期位置
 
-x_f = [tt; sin((pi/2) * tt)]; %目標位置
-l_ = 2*pi/4;  %[m] %初期位置から目標位置までの軌道の道のりの距離
+x_f = [tt; sin((2*pi) * tt)]; %目標位置
+delta_x = diff(x_f(1, :));
+delta_y = diff(x_f(2, :));
+delta_l = sqrt((delta_x .^ 2) + (delta_y .^ 2));
+l_ = sum(delta_l);  %[m] %初期位置から目標位置までの軌道の道のりの距離
+% l_ = 2*pi/4;  %[m] %初期位置から目標位置までの軌道の道のりの距離
 
 % x_f = [tt; tt]; %目標位置
 % l_ = sqrt(2);  %[m] %初期位置から目標位置までの軌道の道のりの距離
@@ -83,8 +87,9 @@ for i = 1 : length(x_f) - 1
     % delta_y = x_f(2, i + 1) - x_f(2, i);
     % delta_l = sqrt(delta_x ^ 2 + delta_y ^ 2);
 
-    delta_path(:, i) = ([delta_x; delta_y] / delta_l) * fv(tt(i)) * dt;
-    distance = distance + delta_l;
+    % delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * fv(tt(i)) * dt;
+    
+    distance = distance + delta_l(i);
 end
 
 subplot(m, n, 4)

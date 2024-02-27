@@ -39,8 +39,8 @@ t_acc_ = 0.2;%[s]
 tt = 0 : dt : T_f_;
 x_0 = [0; 0]; %初期位置
 
-% x_f = [sqrt(3)*tt; tt]; %目標位置
-x_f = [tt; sin((2*pi) * tt)]; %目標位置
+x_f = [sqrt(3)*tt; tt]; %目標位置
+% x_f = [tt; sin((2*pi) * tt)]; %目標位置
 
 delta_x = diff(x_f(1, :));
 delta_y = diff(x_f(2, :));
@@ -82,12 +82,12 @@ ylabel("x [m]")
 %軌道計算
 distance = 0;
 delta_path = zeros(2, length(x_f) - 1);
+V = l_ / T_f_;
 for i = 1 : length(x_f) - 1
-    % delta_x = x_f(1, i + 1) - x_f(1, i);
-    % delta_y = x_f(2, i + 1) - x_f(2, i);
-    % delta_l = sqrt(delta_x ^ 2 + delta_y ^ 2);
 
-    delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * fv(tt(i)) * dt;
+    % delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * fv(tt(i)) * dt; %台形速度
+        delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * V * dt; %一定速度
+
     distance = distance + delta_l(i);
 end
 

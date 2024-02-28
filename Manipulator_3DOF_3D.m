@@ -4,7 +4,6 @@ classdef Manipulator_3DOF_3D
         arm_links_ = zeros(5, 1);
 
         hand_position_ = zeros(3, 1);   %ハンドの位置
-        % hand_orientation_ = zeros(1, 1);%ハンドの姿勢
 
         %各関節の位置
         P0_ = zeros(3, 1); 
@@ -12,10 +11,6 @@ classdef Manipulator_3DOF_3D
         P2_ = zeros(3, 1);
         P3_ = zeros(3, 1);
         P4_ = zeros(3, 1);
-
-        %指先の位置
-        % finger_position1_ = zeros(2, 1);
-        % finger_position2_ = zeros(2, 1);
 
         dt_ = 0; %制御周期
     end
@@ -39,9 +34,6 @@ classdef Manipulator_3DOF_3D
             %ハンドの位置と姿勢を計算
             obj = obj.calcKinematics;
 
-            %指先の位置を計算
-            % obj.finger_position1_ = obj.hand_position_ + [0.2 * cos(obj.hand_orientation_); 0.2 * sin(obj.hand_orientation_)];
-            % obj.finger_position2_ = obj.hand_position_ + [0.1 * cos(obj.hand_orientation_ + pi/2); 0.1 * sin(obj.hand_orientation_ + pi/2)];
         end
 
         %ロボットの状態をプロット
@@ -93,8 +85,6 @@ classdef Manipulator_3DOF_3D
             %ハンドの位置
             obj.hand_position_ = obj.P4_;
             
-            %ハンドの姿勢
-            % obj.hand_orientation_ = obj.joint_angles_(3);
         end
 
         function obj = calcInverseKinematics(obj)
@@ -145,16 +135,6 @@ classdef Manipulator_3DOF_3D
         function obj = setPosition(obj, src_position)
             obj.hand_position_ = src_position;
         end
-
-        % %ハンド姿勢の取得
-        % function o = getOrientation(obj)
-        %     o = obj.hand_orientation_;
-        % end
-        % 
-        % %ハンド姿勢の設定
-        % function obj = setOrientation(obj, theta)
-        %     obj.hand_orientation_ = theta;
-        % end
 
         %各関節角度の取得
         function t = getJointThetas(obj)

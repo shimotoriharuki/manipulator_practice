@@ -79,7 +79,7 @@ classdef Manipulator_3DOF_3D
                                  length0 + length1];
 
             obj.P2_ = [length2 * cos(theta0) * cos(theta1);
-                       length2 * cos(theta1) * sin(theta1);
+                       length2 * sin(theta0) * cos(theta1);
                        length0 + length1 + length2 * sin(theta1)];
 
             obj.P3_ = [cos(theta0) * (length2 * cos(theta1) + length3 * cos(theta1 + theta2));

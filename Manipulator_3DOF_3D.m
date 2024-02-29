@@ -105,7 +105,7 @@ classdef Manipulator_3DOF_3D
             th2 = pi - acos((-L13^2 + l2^2 + l3^2) / (2 * l2 * l3));
 
             l13 = sqrt(x3^2 + y3^2); %L13を斜辺としたときの直角三角形の底辺
-            th1 = atan2(z3 - l0 - l1, l13) - acos((-l3^2 + L13^2 + l2^2) / (2 * L13 * l2));
+            th1 = atan2(z3 - (l0 + l1), l13) - acos((-l3^2 + L13^2 + l2^2) / (2 * L13 * l2));
 
             th0 = atan2(y3, x3);
             

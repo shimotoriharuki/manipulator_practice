@@ -98,16 +98,16 @@ classdef Manipulator_3DOF_3D
             %P3の位置
             x3 = obj.hand_position_(1);
             y3 = obj.hand_position_(2);
-            z3 = obj.hand_position_(3) - l4;
+            z3 = obj.hand_position_(3) + l4;
 
             %各関節角度を計算
             L13 = sqrt(x3^2 + y3^2 + z3^2); %P1からP3までの距離
-            l13 = sqrt(x3^2 + y3^2); %L13を斜辺としたときの直角三角形の底辺
             th2 = pi - acos((-L13^2 + l2^2 + l3^2) / (2 * l2 * l3));
 
-            th1 = atan2(z3 - l0 - l1, l13) - acos((-l3^2 + L13^2 + l2^2) / (-2 * L13 * l2));
+            l13 = sqrt(x3^2 + y3^2); %L13を斜辺としたときの直角三角形の底辺
+            th1 = atan2(z3 - l0 - l1, l13) - acos((-l3^2 + L13^2 + l2^2) / (2 * L13 * l2));
 
-            th0 = atan2((y3), (x3));
+            th0 = atan2(y3, x3);
             
             obj.joint_angles_ = [th0; th1; th2];
         end

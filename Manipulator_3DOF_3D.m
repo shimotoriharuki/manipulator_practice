@@ -57,30 +57,30 @@ classdef Manipulator_3DOF_3D
     
         function obj = calcKinematics(obj)
             %関節角度から位置と姿勢を計算する
-            theta0 = obj.joint_angles_(1);
-            theta1 = obj.joint_angles_(2);
-            theta2 = obj.joint_angles_(3);
-            length0 = obj.arm_links_(1);
-            length1 = obj.arm_links_(2);
-            length2 = obj.arm_links_(3);
-            length3 = obj.arm_links_(4);
-            length4 = obj.arm_links_(5);
+            th0 = obj.joint_angles_(1);
+            th1 = obj.joint_angles_(2);
+            th2 = obj.joint_angles_(3);
+            l0 = obj.arm_links_(1);
+            l1 = obj.arm_links_(2);
+            l2 = obj.arm_links_(3);
+            l3 = obj.arm_links_(4);
+            l4 = obj.arm_links_(5);
             
             obj.P1_ = obj.P0_ + [0;
                                  0;
-                                 length0 + length1];
+                                 l0 + l1];
 
-            obj.P2_ = [length2 * cos(theta0) * cos(theta1);
-                       length2 * sin(theta0) * cos(theta1);
-                       length0 + length1 + length2 * sin(theta1)];
+            obj.P2_ = [l2 * cos(th0) * cos(th1);
+                       l2 * sin(th0) * cos(th1);
+                       l0 + l1 + l2 * sin(th1)];
 
-            obj.P3_ = [cos(theta0) * (length2 * cos(theta1) + length3 * cos(theta1 + theta2));
-                       sin(theta0) * (length2 * cos(theta1) + length3 * cos(theta1 + theta2));
-                       length0 + length1 + length2 * sin(theta1) + length3 * sin(theta1 + theta2)];
+            obj.P3_ = [cos(th0) * (l2 * cos(th1) + l3 * cos(th1 + th2));
+                       sin(th0) * (l2 * cos(th1) + l3 * cos(th1 + th2));
+                       l0 + l1 + l2 * sin(th1) + l3 * sin(th1 + th2)];
 
             obj.P4_ = obj.P3_ + [0;
                                  0;
-                                 -length4];
+                                 -l4];
             
             %ハンドの位置
             obj.hand_position_ = obj.P4_;
@@ -89,15 +89,27 @@ classdef Manipulator_3DOF_3D
 
         function obj = calcInverseKinematics(obj)
             %位置と姿勢から関節角度を計算する
+            %リンクの長さ
             l0 = obj.arm_links_(1);
             l1 = obj.arm_links_(2);
-            x = obj.hand_position_(1);
-            y = obj.hand_position_(2);
+            l2 = obj.arm_links_(3);
+            l3 = obj.arm_links_(4);
+            l4 = obj.arm_links_(5);
+            %P3の位置
+            x3 = obj.hand_position_(1);
+            y3 = obj.hand_position_(2);
+            z3 = obj.hand_position_(3) - l4;
 
-            theta1 = pi - acos((l0^2 + l1^2 - x^2 - y^2)/(2 * l0 * l1));
-            theta0 = atan2(y, x) - acos((x^2 + y^2 + l0^2 - l1^2)/(2 * sqrt(x^2 + y^2) * l0));
+            %各関節角度を計算
+            L13 = sqrt(x3^2 + y3^2 + z3^2); %P1からP3までの距離
+            l13 = sqrt(x3^2 + y3^2); %L13を斜辺としたときの直角三角形の底辺
+            th2 = pi - acos((-L13^2 + l2^2 + l3^2) / (2 * l2 * l3));
+
+            th1 = atan2(z3 - l0 - l1, l13) - acos((-l3^2 + L13^2 + l2^2) / (-2 * L13 * l2));
+
+            th0 = atan2((y3), (x3));
             
-            obj.joint_angles_ = [theta0; theta1; 0];
+            obj.joint_angles_ = [th0; th1; th2];
         end
 
         function obj = calcInverseKinematicsUsingJacobian(obj, d_P, d_th)

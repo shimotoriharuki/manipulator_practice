@@ -102,15 +102,16 @@ classdef Manipulator_3DOF_3D
 
             %各関節角度を計算
             L13 = sqrt(x3_shift^2 + y3_shift^2 + z3_shift^2); %P1からP3までの距離
-            th2 = pi - acos((-L13^2 + l2^2 + l3^2) / (2 * l2 * l3));
+            th2 = -pi + acos((-L13^2 + l2^2 + l3^2) / (2 * l2 * l3));
+            % th2 = -acos((-L13^2 + l2^2 + l3^2) / (2 * l2 * l3));
 
             l13 = sqrt(x3_shift^2 + y3_shift^2); %L13を斜辺としたときの直角三角形の底辺
-            th1 = atan2(z3_shift, l13) - acos((-l3^2 + L13^2 + l2^2) / (2 * L13 * l2));
+            th1 = atan2(z3_shift, l13) + acos((-l3^2 + L13^2 + l2^2) / (2 * L13 * l2));
 
             th0 = atan2(y3_shift, x3_shift);
             
             obj.joint_angles_ = [th0; th1; th2];
-            
+
         end
 
         function obj = calcInverseKinematicsUsingJacobian(obj, d_P, d_th)

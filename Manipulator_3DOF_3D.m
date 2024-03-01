@@ -48,6 +48,7 @@ classdef Manipulator_3DOF_3D
             axis equal
             xlim([-2.5, 2.5])
             ylim([-2.5, 2.5])
+            zlim([0, 2.5])
             xlabel("x")
             ylabel("y")
             zlabel("z")
@@ -114,27 +115,47 @@ classdef Manipulator_3DOF_3D
 
         end
 
-        function obj = calcInverseKinematicsUsingJacobian(obj, d_P, d_th)
-            th0 = obj.joint_angles_(1);
-            th1 = obj.joint_angles_(2);
+        function obj = calcInverseKinematicsUsingJacobian(obj, d_P)
+            %リンクの長さ
             l0 = obj.arm_links_(1);
             l1 = obj.arm_links_(2);
+            l2 = obj.arm_links_(3);
+            l3 = obj.arm_links_(4);
+            l4 = obj.arm_links_(5);
+            %関節の角度
+            th0 = obj.joint_angles_(1);
+            th1 = obj.joint_angles_(2);
+            th2 = obj.joint_angles_(3);
 
-            j11 = -cos(th0 + th1) / (l0 * cos(th0 + th1) * sin(th0) - l0 * sin(th0 + th1) * cos(th0));
-            j12 = -sin(th0 + th1) / (l0 * cos(th0 + th1) * sin(th0) - l0 * sin(th0 + th1) * cos(th0));
+            j11 = -sin(th0)/(l3*cos(th1 + th2)*cos(th0)^2 ...
+                    + l3*cos(th1 + th2)*sin(th0)^2 + l2*cos(th0)^2*cos(th1) ...
+                    + l2*cos(th1)*sin(th0)^2);
+            j12 = cos(th0)/(l3*cos(th1 + th2)*cos(th0)^2 ...
+                    + l3*cos(th1 + th2)*sin(th0)^2 + l2*cos(th0)^2*cos(th1) ...
+                    + l2*cos(th1)*sin(th0)^2);
             j13 = 0;
-            j21 = (l1 * cos(th0 + th1) + l0 * cos(th0)) / (l0 * l1 * cos(th0 + th1) * sin(th0) - l0 * l1 * sin(th0 + th1) * cos(th0));
-            j22 = (l1 * sin(th0 + th1) + l0 * sin(th0))/(l0 * l1 * cos(th0 + th1) * sin(th0) - l0 * l1 * sin(th0 + th1) * cos(th0));
-            j23 = 0;
-            j31 = 0;
-            j32 = 0;
-            j33 = 1;
+            j21 = -(cos(th1 + th2)*cos(th0))/(l2*cos(th1 + th2)*cos(th0)^2*sin(th1) ...
+                    - l2*sin(th1 + th2)*cos(th0)^2*cos(th1) + l2*cos(th1 + th2)*sin(th0)^2*sin(th1) ...
+                    - l2*sin(th1 + th2)*cos(th1)*sin(th0)^2);
+            j22 = -(cos(th1 + th2)*sin(th0))/(l2*cos(th1 + th2)*cos(th0)^2*sin(th1) ...
+                    - l2*sin(th1 + th2)*cos(th0)^2*cos(th1) + l2*cos(th1 + th2)*sin(th0)^2*sin(th1) ...
+                    - l2*sin(th1 + th2)*cos(th1)*sin(th0)^2);
+            j23 = -sin(th1 + th2)/(l2*cos(th1 + th2)*sin(th1) ...
+                    - l2*sin(th1 + th2)*cos(th1));
+            j31 = (cos(th0)*(l3*cos(th1 + th2) + l2*cos(th1)))/(l2*l3*cos(th1 + th2)*cos(th0)^2*sin(th1) ...
+                    - l2*l3*sin(th1 + th2)*cos(th0)^2*cos(th1) + l2*l3*cos(th1 + th2)*sin(th0)^2*sin(th1) ...
+                    - l2*l3*sin(th1 + th2)*cos(th1)*sin(th0)^2);
+            j32 = (sin(th0)*(l3*cos(th1 + th2) + l2*cos(th1)))/(l2*l3*cos(th1 + th2)*cos(th0)^2*sin(th1) ...
+                    - l2*l3*sin(th1 + th2)*cos(th0)^2*cos(th1) + l2*l3*cos(th1 + th2)*sin(th0)^2*sin(th1) ...
+                    - l2*l3*sin(th1 + th2)*cos(th1)*sin(th0)^2);
+            j33 = (l3*sin(th1 + th2) + l2*sin(th1))/(l2*l3*cos(th1 + th2)*sin(th1) ...
+                    - l2*l3*sin(th1 + th2)*cos(th1));
 
             J_inv = [j11, j12, j13;
                      j21, j22, j23;
                      j31, j32, j33];
 
-            d_joint_thetas = J_inv * [d_P; d_th];
+            d_joint_thetas = J_inv * d_P;
 
             obj.joint_angles_ = obj.joint_angles_ + d_joint_thetas * obj.dt_;
             

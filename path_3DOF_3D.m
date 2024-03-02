@@ -37,9 +37,9 @@ T_f_ = 1; %[s]
 t_acc_ = 0.2;%[s]
 
 tt = 0 : dt : T_f_;
-x_0 = [0; 0; 0]; %初期位置
+x_0 = [1; 0; 0.8]; %初期位置
 
-x_f = [tt; linspace(1, 1, length(tt)); tt*0.5]; %目標位置
+x_f = [0.5*tt; linspace(0, 0, length(tt)); tt*0.5]; %目標位置
 % x_f = [tt; sin((2*pi) * tt)]; %目標位置
 
 delta_x = diff(x_f(1, :));
@@ -66,7 +66,7 @@ scatter3(x_0(1, :) + x_f(1, :), x_0(2, :) + x_f(2, :), x_0(3, :) + x_f(3, :));
 title("軌道")
 xlabel("x [m]")
 ylabel("y [m]")
-ylabel("z [m]")
+zlabel("z [m]")
 
 subplot(m, n, 2)
 fplot(t, fv);
@@ -92,7 +92,10 @@ for i = 1 : length(x_f) - 1
     distance = distance + delta_l(i);
 end
 
-path = [cumsum(delta_path(1, :)); cumsum(delta_path(2, :)); cumsum(delta_path(3, :))];
+path = x_0 + [cumsum(delta_path(1, :)); cumsum(delta_path(2, :)); cumsum(delta_path(3, :))];
 
 subplot(m, n, 4)
 scatter3(path(1, :), path(2, :), path(3, :))
+xlabel("x [m]")
+ylabel("y [m]")
+zlabel("z [m]")

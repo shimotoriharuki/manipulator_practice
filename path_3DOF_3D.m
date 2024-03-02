@@ -37,17 +37,17 @@ T_f_ = 1; %[s]
 t_acc_ = 0.2;%[s]
 
 tt = 0 : dt : T_f_;
-x_0 = [0; 0]; %初期位置
+x_0 = [0; 0; 0]; %初期位置
 
-x_f = [tt; linspace(1, 1, length(tt))]; %目標位置
+x_f = [tt; linspace(1, 1, length(tt)); tt*0.5]; %目標位置
 % x_f = [tt; sin((2*pi) * tt)]; %目標位置
 
 delta_x = diff(x_f(1, :));
 delta_y = diff(x_f(2, :));
-delta_l = sqrt(power(delta_x, 2) + power(delta_y, 2));
+delta_z = diff(x_f(3, :));
+delta_l = sqrt(power(delta_x, 2) + power(delta_y, 2) + power(delta_z, 2));
 l_ = sum(delta_l);  %[m] %初期位置から目標位置までの軌道の道のりの距離
-% l_ = 2*pi;  %[m] %初期位置から目標位置までの軌道の道のりの距離
-% l_ = sqrt(2);  %[m] %初期位置から目標位置までの軌道の道のりの距離
+
 
 fv = subs(fv, T_f, T_f_);
 fv = subs(fv, t_acc, t_acc_);
@@ -62,10 +62,11 @@ m = 4; %プロットの行
 n = 1; %プロットの列
 
 subplot(m, n, 1)
-scatter(x_0(1, :) + x_f(1, :), x_0(2, :) + x_f(2, :));
+scatter3(x_0(1, :) + x_f(1, :), x_0(2, :) + x_f(2, :), x_0(3, :) + x_f(3, :));
 title("軌道")
 xlabel("x [m]")
 ylabel("y [m]")
+ylabel("z [m]")
 
 subplot(m, n, 2)
 fplot(t, fv);
@@ -81,17 +82,17 @@ ylabel("x [m]")
 
 %軌道計算
 distance = 0;
-delta_path = zeros(2, length(x_f) - 1);
+delta_path = zeros(3, length(x_f) - 1);
 V = l_ / T_f_;
 for i = 1 : length(x_f) - 1
 
-    delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * fv(tt(i)) * dt; %台形速度
+    delta_path(:, i) = ([delta_x(i); delta_y(i); delta_z(i)] / delta_l(i)) * fv(tt(i)) * dt; %台形速度
     % delta_path(:, i) = ([delta_x(i); delta_y(i)] / delta_l(i)) * V * dt; %一定速度
 
     distance = distance + delta_l(i);
 end
 
-path = [cumsum(delta_path(1, :)); cumsum(delta_path(2, :))];
+path = [cumsum(delta_path(1, :)); cumsum(delta_path(2, :)); cumsum(delta_path(3, :))];
 
 subplot(m, n, 4)
-scatter(path(1, :), path(2, :))
+scatter3(path(1, :), path(2, :), path(3, :))
